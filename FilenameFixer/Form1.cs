@@ -73,9 +73,6 @@ namespace FilenameFixer
                     var newFilePair = new { Name = amountDone.ToString(), List = new List<String>() };
                     foreach( var filePath in filePaths )
                     {
-                        /*int lastBackslashIndex = uniqueFile.LastIndexOf( "\\" );
-                        int lastDotIndex = uniqueFile.LastIndexOf( '.' );
-                        string uniqueFileName = uniqueFile.Substring( lastBackslashIndex + 1, lastDotIndex - lastBackslashIndex - 1 );*/
                         if( filePath.ToLower().Contains( id ) && uniqueFileTypes.Concat( requiredFileTypes ).ToArray().Any( filePath.Substring( filePath.LastIndexOf( '.' ) + 1 ).Equals ) )
                             newFilePair.List.Add( filePath );
                     }
@@ -110,74 +107,6 @@ namespace FilenameFixer
                     }
                     progressBar1.BeginInvoke( new Action( () => progressBar1.Value = ( ++amountDone / filePairs.Count ) * 100 ) );
                 }
-                /*string[] filePaths = Directory.GetFiles( _selectedPath );
-                string[] uniqueFileTypes = textBox1.Text.Split( ',' );
-                var uniqueFiles = new List<string>();
-                foreach( var uniqueFileType in uniqueFileTypes )
-                {
-                    uniqueFiles.AddRange( filePaths.Where( path => Regex.Match( path, String.Format( @"^.*?\.{0}$", uniqueFileType ) ).Success ) );
-                }
-                string[] requiredFileTypes = textBox2.Text.Split( ',' );
-                foreach( var uniqueFile in uniqueFiles )
-                {
-                    foreach( var requiredFileType in requiredFileTypes )
-                    {
-                        bool found = false;
-                        foreach( var filePath in filePaths )
-                        {
-                            int lastBackslashIndex = uniqueFile.LastIndexOf( "\\" );
-                            int lastDotIndex = uniqueFile.LastIndexOf( '.' );
-                            string uniqueFileName = uniqueFile.Substring( lastBackslashIndex + 1, lastDotIndex - lastBackslashIndex - 1 );
-
-                            //var episodeNumber = Regex.Match( uniqueFileName, @"[sS][\d]{1,2}[eE][\d]{1,2}" ).Value;
-
-                            //if( !String.IsNullOrWhiteSpace( episodeNumber ) )
-                            //{
-                            //    found = true;
-                            //    break;
-                            //}
-
-                            if( Regex.Match( filePath, String.Format( @"^.*?{0}.*?\.{1}$", uniqueFileName, requiredFileType ) ).Success )
-                            {
-                                found = true;
-                                break;
-                            }
-                        }
-                        if( !found )
-                        {
-                            MessageBox.Show( "ERROR! Couldn't find filetype: " + requiredFileType + " for " + uniqueFile );
-                            return;
-                        }
-                    }
-                }
-
-                int amountDone = 0;
-                foreach( var uniqueFile in uniqueFiles )
-                {
-                    foreach( var requiredFileType in requiredFileTypes )
-                    {
-                        foreach( var filePath in filePaths )
-                        {
-                            int lastBackslashIndex = uniqueFile.LastIndexOf( "\\" );
-                            int lastDotIndex = uniqueFile.LastIndexOf( '.' );
-                            string uniqueFileName = uniqueFile.Substring( lastBackslashIndex + 1, lastDotIndex - lastBackslashIndex - 1 );
-                            try
-                            {
-                                if( Regex.Match( filePath, String.Format( @"^.*?{0}.*?\.{1}$", uniqueFileName, requiredFileType ) ).Success )
-                                {
-                                    File.Move( filePath, uniqueFile.Substring( 0, lastBackslashIndex + 1 ) + uniqueFileName + "." + requiredFileType );
-                                    progressBar1.BeginInvoke( new Action( () => progressBar1.Value = ( ++amountDone / uniqueFiles.Count ) * 100 ) );
-                                    break;
-                                }
-                            }
-                            catch( Exception exception )
-                            {
-                                MessageBox.Show( "ERROR! An exception occured: " + exception.Message );
-                                return;
-                            }
-                        }
-                    }
-                }*/
 
                 button3.BeginInvoke( new Action( () => button3.Enabled = false ) );
                 button2.BeginInvoke( new Action( () => button2.Enabled = true ) );
