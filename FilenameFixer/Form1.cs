@@ -63,6 +63,55 @@ namespace FilenameFixer
             {
                 string[] filePaths = Directory.GetFiles( _selectedPath );
                 string[] uniqueFileTypes = textBox1.Text.Split( ',' );
+                string[] requiredFileTypes = textBox2.Text.Split( ',' );
+
+                var filePairs = new[] { new { Name = "", List = new List<String>() } }.ToList();
+                int amountDone = 1;
+                foreach( var uniqueFile in filePaths.Where( path => uniqueFileTypes.Any( path.Contains ) ) )
+                {
+                    var id = Regex.Match( uniqueFile, @"([sS]\d+([eE]0?\d+)+|[sS]?\d+[xX][eE]?\d+)" ).Value.ToLower();
+                    var newFilePair = new { Name = amountDone.ToString(), List = new List<String>() };
+                    foreach( var filePath in filePaths )
+                    {
+                        /*int lastBackslashIndex = uniqueFile.LastIndexOf( "\\" );
+                        int lastDotIndex = uniqueFile.LastIndexOf( '.' );
+                        string uniqueFileName = uniqueFile.Substring( lastBackslashIndex + 1, lastDotIndex - lastBackslashIndex - 1 );*/
+                        if( filePath.ToLower().Contains( id ) && uniqueFileTypes.Concat( requiredFileTypes ).ToArray().Any( filePath.Substring( filePath.LastIndexOf( '.' ) + 1 ).Equals ) )
+                            newFilePair.List.Add( filePath );
+                    }
+                    if( newFilePair.List.Count != ( 1 + requiredFileTypes.Length ) )
+                    {
+                        MessageBox.Show( "ERROR! Couldn't find all required file types for: " + id );
+                        return;
+                    }
+                    filePairs.Add( newFilePair );
+                    amountDone++;
+                }
+
+                amountDone = 0;
+                foreach( var filePair in filePairs )
+                {
+                    if( filePair.Name != "" )
+                    {
+                        foreach( var file in filePair.List )
+                        {
+                            try
+                            {
+                                string location = file.Substring( 0, file.LastIndexOf( "\\" ) ) + "\\" + filePair.Name + file.Substring( file.LastIndexOf( '.' ) );
+                                File.Move( file, location );
+                            }
+                            catch( Exception exception )
+                            {
+                                MessageBox.Show( "ERROR! An exception occured: " + exception.Message );
+                                return;
+                            }
+                            
+                        }
+                    }
+                    progressBar1.BeginInvoke( new Action( () => progressBar1.Value = ( ++amountDone / filePairs.Count ) * 100 ) );
+                }
+                /*string[] filePaths = Directory.GetFiles( _selectedPath );
+                string[] uniqueFileTypes = textBox1.Text.Split( ',' );
                 var uniqueFiles = new List<string>();
                 foreach( var uniqueFileType in uniqueFileTypes )
                 {
@@ -79,6 +128,15 @@ namespace FilenameFixer
                             int lastBackslashIndex = uniqueFile.LastIndexOf( "\\" );
                             int lastDotIndex = uniqueFile.LastIndexOf( '.' );
                             string uniqueFileName = uniqueFile.Substring( lastBackslashIndex + 1, lastDotIndex - lastBackslashIndex - 1 );
+
+                            //var episodeNumber = Regex.Match( uniqueFileName, @"[sS][\d]{1,2}[eE][\d]{1,2}" ).Value;
+
+                            //if( !String.IsNullOrWhiteSpace( episodeNumber ) )
+                            //{
+                            //    found = true;
+                            //    break;
+                            //}
+
                             if( Regex.Match( filePath, String.Format( @"^.*?{0}.*?\.{1}$", uniqueFileName, requiredFileType ) ).Success )
                             {
                                 found = true;
@@ -119,7 +177,7 @@ namespace FilenameFixer
                             }
                         }
                     }
-                }
+                }*/
 
                 button3.BeginInvoke( new Action( () => button3.Enabled = false ) );
                 button2.BeginInvoke( new Action( () => button2.Enabled = true ) );
